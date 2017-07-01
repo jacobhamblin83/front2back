@@ -10,9 +10,12 @@ const session = require('express-session');
 //require files
 const config = require('./config.js')
 
-//establish connection with database
+//establish connection with database (locally)
 // const connectionString = 'postgres://postgres:Testies1-1@localhost/jacobhamblin';
+
+//changed to a hosted database
 const connectionString = 'postgres://suuauihq:12cpEgmVX8tOVFGi_ENf31uCErYecQxQ@pellefant.db.elephantsql.com:5432/suuauihq';
+
 const db = massive.connectSync({
   connectionString: connectionString
 })
@@ -25,7 +28,7 @@ app.use(session({
 }));
 
 //set port for app to listen
-const port = 3000;
+const port = 3500;
 
 app.use(bodyParser.json());
 
