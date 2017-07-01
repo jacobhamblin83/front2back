@@ -11,7 +11,8 @@ const session = require('express-session');
 const config = require('./config.js')
 
 //establish connection with database
-const connectionString = 'postgres://postgres:Testies1-1@localhost/jacobhamblin';
+// const connectionString = 'postgres://postgres:Testies1-1@localhost/jacobhamblin';
+const connectionString = 'postgres://suuauihq:12cpEgmVX8tOVFGi_ENf31uCErYecQxQ@pellefant.db.elephantsql.com:5432/suuauihq';
 const db = massive.connectSync({
   connectionString: connectionString
 })
