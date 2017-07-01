@@ -30,18 +30,19 @@ app.use(bodyParser.json());
 
 app.use(express.static(__dirname + '/public'))
 
+
 //create an item in the database which takes user input from the web page and their user email from the session
 app.post('/api/list', function (req, res) {
-  db.create_item([req.body.item, req.session.user], function (err, success) {
+  db.create_item([req.body.userInput, req.session.user], function (err, success) {
     (err) ? res.status(500).json(err) : res.status(200).json('success')
   })
 })
 
 //see all the items in the users list based off session user email
 app.get('/api/list', function (req, res) {
-  db.see_names([req.session.user], function (err, item) {
-    (err) ? res.status(500).json(err) : res.status(200).json(item)
-  })
+    db.see_names([req.session.user], function (err, item) {
+      (err) ? res.status(500).json(err) : res.status(200).json(item)
+    })
 })
 
 //remove item based on the ID of database entry
@@ -60,9 +61,14 @@ app.put('/api/listupdate', function(req, res) {
 
 //create a new user based on user input from web page. First the web app checks the database to make sure the email is not already used and then creates the user
 app.post('/api/create_user', function(req, res) {
-  db.create_user([req.body.email, req.body.password], function(err, response) {
-    req.session.user = req.body.email;
-    (err) ? res.status(500).json(err) : res.status(200).json(response)
+  db.create_user([req.body.createName, req.body.email, req.body.password], function(err, response) {
+    console.log(req.body.createName, req.body.email, req.body.password)
+    if (!err) {
+      req.session.user = req.body.email;
+      req.session.firstname = req.body.createName;
+      res.status(200).json(response);
+    }
+    else res.status(500).json(err); 
   })
 })
 
@@ -72,6 +78,8 @@ app.post('/api/check_user', function(req, res) {
     if (!err) {
       req.session.user = req.body.email
       res.status(200).json(response)
+          console.log(req.session.user)
+
     }
     else if (err) {
       res.status(500).json(err) 
@@ -94,6 +102,11 @@ app.post('/api/change_password', function(req, res) {
 //this is made to simply check who the user is in case of page reload, etc.
 app.get('/api/see_user', function(req, res) {
   res.status(200).json(req.session.user)
+})
+app.get('/api/get_name', function(req, res) {
+  db.get_name([req.session.user], function(err, response) {
+    res.status(200).json(response)
+  })
 })
 
 //logout removes the user off of session

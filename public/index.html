@@ -9,7 +9,7 @@
       <div class='border' ng-show='currentUser'>
         <h3>New Item</h3>
         <input type="text" ng-model='userInput' ng-keyup="enter($event)">
-        <button ng-click='submit(userInput)'>Submit</button>
+        <button ng-click='submit({userInput: userInput})'>Submit</button>
         
         <div>
           <h3>My List</h3>
@@ -32,7 +32,7 @@
 
       <div class='login-register-form'>
         <div class='spread'>
-          <h3>{{iflogged}} {{currentUser}}</h3>
+          <h3>{{messageInfo}}<br><span ng-show='currentUser'>Welcome {{userFirstname}}!</span></h3>
         </div>
         <div ng-hide='currentUser'class="login-form">
           <h3>Login</h3>
@@ -49,9 +49,11 @@
         <h3>{{passChangedSuccess}}</h3>
         <div ng-hide='currentUser' class="register-form">
           <h3>Create User</h3>
+          <input ng-model="createName" type='text' placeholder="Firstname">
           <input ng-model="email" type="text" placeholder="email">
           <input ng-model="password" type='password' placeholder="password">
-          <button ng-click="newUser({email: email, password: password})">Create</button>
+          <input ng-model="passwordVerify" type='password' placeholder="Verify password">
+          <button ng-click="newUser({createName: createName, email: email, password: password, passwordVerify: passwordVerify})">Create</button>
         </div>
       </div>
     </div>

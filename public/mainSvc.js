@@ -1,32 +1,16 @@
 angular.module('app').service('mainSvc', function ($http) {
 
-  this.submit = function (userInput) {
-    return $http({
-      method: "POST",
-      url: "/api/list",
-      data: {
-        item: userInput
-      }
-    })
+  this.submit = (userInput) => {
+    return $http.post('/api/list', userInput);
   }
-  this.seeNames = function () {
-    return $http({
-      method: "GET",
-      url: "/api/list",
-    })
+  this.seeNames = () => {
+    return $http.get('/api/list');
   }
-  this.removeName = function (id) {
-    return $http({
-      method: "DELETE",
-      url: "/api/list/" + id
-    })
+  this.removeName = (id) => {
+    return $http.delete('/api/list/' +id)
   }
-  this.updateName = function (obj) {
-    return $http({
-      method: "PUT",
-      url: "/api/listupdate",
-      data: obj
-    })
+  this.updateName = (obj) => {
+    return $http.put('/api/listupdate', obj)
   }
   this.newUser = function (obj) {
     return $http.post('/api/create_user', obj)
@@ -42,5 +26,8 @@ angular.module('app').service('mainSvc', function ($http) {
   }
   this.changePassword = function(obj) {
     return $http.post('/api/change_password', obj)
+  }
+  this.getName = function() {
+    return $http.get('/api/get_name')
   }
 })
