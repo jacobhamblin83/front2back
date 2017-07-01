@@ -14,15 +14,15 @@
         <div>
           <h3>My List</h3>
           <hr>
-          <div class='left' ng-repeat="name in names">
+          <div class='left' ng-repeat="item in items">
             <ul>
               <div class='each'>
-                <h3 class='item-name'>{{name.name}}</h3>
+                <h3 class='item-name'>{{item.name}}</h3>
                 <div class='buttons'>
-                  <button ng-click='remove(name.id)'>Delete</button>
-                  <button ng-click='edit(name.id)'>Edit</button>
-                  <input ng-show="selected === name.id"type="text" ng-model='info'>
-                  <button ng-show="selected === name.id" ng-click='update({id: name.id, item: info})'>Update</button>
+                  <button ng-click='removeItem(item.id)'>Delete</button>
+                  <button ng-click='edit(item.id)'>{{editButtonName}}</button>
+                  <input ng-show="selected === item.id" type="text" ng-model='info'>
+                  <button ng-show="selected === item.id" ng-click='updateItem({id: item.id, item: info})'>Update</button>
                 </div>
               </div>
             </ul>
@@ -46,6 +46,7 @@
         <input type='password' placeholder='New password' ng-show='showInputField' ng-model='passChangeField'>
         <input type='password' placeholder='Repeat new password' ng-show='showInputField' ng-model='passChangeFieldRepeat'>
         <button ng-show='showInputField' ng-click='submitNewPassword({oldPass: oldPassField, newPass: passChangeField, newPassVerify: passChangeFieldRepeat})'>Submit</button>
+        <button ng-show='showInputField' ng-click='cancel()'>Cancel</button>
         <h3>{{passChangedSuccess}}</h3>
         <div ng-hide='currentUser' class="register-form">
           <h3>Create User</h3>

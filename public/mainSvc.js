@@ -3,13 +3,13 @@ angular.module('app').service('mainSvc', function ($http) {
   this.submit = (userInput) => {
     return $http.post('/api/list', userInput);
   }
-  this.seeNames = () => {
+  this.seeItems = () => {
     return $http.get('/api/list');
   }
-  this.removeName = (id) => {
+  this.removeItem = (id) => {
     return $http.delete('/api/list/' +id)
   }
-  this.updateName = (obj) => {
+  this.updateItem = (obj) => {
     return $http.put('/api/listupdate', obj)
   }
   this.newUser = function (obj) {

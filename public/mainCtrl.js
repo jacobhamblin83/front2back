@@ -1,7 +1,9 @@
 angular.module('app').controller('mainCtrl',function($scope, mainSvc){
 
     $scope.selected = -1
+    $scope.editButtonName = 'Edit'
 
+    
     $scope.currentUser = ''
     $scope.showInputField = 0
     $scope.changePasswordmessageInfo = ''
@@ -22,10 +24,11 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
         $scope.passwordVerify = ''
     }
 
+
+
     $scope.submit = function(userInput){
         mainSvc.submit(userInput).then(function(){
-            console.log(userInput)
-            $scope.seeNames()
+            $scope.seeItems()
             clearform();
         })
     }
@@ -36,28 +39,29 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
         }
     }
 
-    $scope.seeNames = function(){
-        mainSvc.seeNames().then(function(response){
-            $scope.names = response.data;
+    $scope.seeItems = function(){
+        mainSvc.seeItems().then(function(response){
+            $scope.items = response.data;
         })  
     }
+    $scope.seeItems()
 
-    $scope.seeNames()
-
-    $scope.remove = function(id){
-        mainSvc.removeName(id).then(function(){
-            $scope.seeNames()
+    $scope.removeItem = function(id){
+        mainSvc.removeItem(id).then(function(){
+            $scope.seeItems()
         })
     }
 
     $scope.edit = function(id){
-        ($scope.selected === id ? $scope.selected = -1 : $scope.selected = id)
+        ($scope.selected === id ? $scope.selected = -1 : $scope.selected = id);
+        ($scope.selected === id ? $scope.editButtonName = 'Cancel' : $scope.editButtonName = 'Edit');
     }
 
-    $scope.update = function(newObj){
-        mainSvc.updateName(newObj).then(function(){
-            $scope.seeNames()
+    $scope.updateItem = function(newObj){
+        mainSvc.updateItem(newObj).then(function(){
+            $scope.seeItems()
             $scope.selected = -1
+            $scope.editButtonName = 'Edit'
         })
     }
 
@@ -85,13 +89,7 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
     var seeUser = function() {
         mainSvc.seeUser().then(function(response) {
             $scope.currentUser = response.data;
-            console.log(response.data)
-            if ($scope.currentUser) {
-                $scope.messageInfo = "Logged in."
-            }
-            else {
-                $scope.messageInfo = ""
-            }
+            $scope.currentUser ? $scope.messageInfo = "Logged in." : $scope.messageInfo = ""
             getName()
         })
     }
@@ -110,8 +108,7 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
     $scope.checkUser = function(obj) {
         mainSvc.checkUser(obj).then(function(response){
             if (response.data[0]) {
-                $scope.seeNames()
-                console.log(response.data[0].email)
+                $scope.seeItems()
                 $scope.currentUser = response.data[0].email;
                 $scope.messageInfo = "Logged in."
                 clearform();
@@ -141,6 +138,10 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
             $scope.messageInfo = 'Sorry your passwords do not match'
         }
         clearform()
+    }
+
+    $scope.cancel = function() {
+        $scope.showInputField = 0;
     }
 
     var clearPassChangedSuccess = function() {

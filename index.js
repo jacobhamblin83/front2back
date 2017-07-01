@@ -40,21 +40,21 @@ app.post('/api/list', function (req, res) {
 
 //see all the items in the users list based off session user email
 app.get('/api/list', function (req, res) {
-    db.see_names([req.session.user], function (err, item) {
+    db.see_items([req.session.user], function (err, item) {
       (err) ? res.status(500).json(err) : res.status(200).json(item)
     })
 })
 
 //remove item based on the ID of database entry
 app.delete('/api/list/:id', function (req, res) {
-  db.remove_name([req.params.id], function(err, id) {
+  db.remove_item([req.params.id], function(err, id) {
     (err) ? res.status(500).json(err) : res.status(200).json(id)
   })
 })
 
 //change an item based off its ID and the user input
 app.put('/api/listupdate', function(req, res) {
-  db.change_name([req.body.id, req.body.item], function(err, response){
+  db.change_item([req.body.id, req.body.item], function(err, response){
     (err) ? res.status(500).json(err) : res.status(200).json(response)
   })
 })
@@ -78,8 +78,6 @@ app.post('/api/check_user', function(req, res) {
     if (!err) {
       req.session.user = req.body.email
       res.status(200).json(response)
-          console.log(req.session.user)
-
     }
     else if (err) {
       res.status(500).json(err) 
