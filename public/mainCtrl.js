@@ -33,11 +33,11 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
         })
     }
 
-    $scope.enter = function(e){
-        if(e.keyCode === 13){
-            $scope.submit($scope.userInput)
-        }
-    }
+    // $scope.enter = function(e){
+    //     if(e.keyCode === 13){
+    //         $scope.submit($scope.userInput)
+    //     }
+    // }
 
     $scope.seeItems = function(){
         mainSvc.seeItems().then(function(response){
@@ -47,9 +47,12 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
     $scope.seeItems()
 
     $scope.removeItem = function(id){
-        mainSvc.removeItem(id).then(function(){
+        var r = confirm("Are you sure you want to delete this item?");
+        if (r == true) {
+            mainSvc.removeItem(id).then(function(){
             $scope.seeItems()
-        })
+            })
+        } 
     }
 
     $scope.edit = function(id){
@@ -149,8 +152,11 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
     }
 
     $scope.logout = function(){
-        mainSvc.logout()
-        seeUser()
-        getName()
+        var a = confirm('Are you sure you want to logout?');
+        if (a) {
+            mainSvc.logout()
+            seeUser()
+            getName()
+        }
     }
 })

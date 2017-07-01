@@ -90,3 +90,6 @@ ul {
 .button-lg {
   width: 160px
 }
+.button-danger {
+  background-color:salmon
+}
