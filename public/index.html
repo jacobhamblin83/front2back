@@ -42,18 +42,18 @@
         </div>
         <button ng-show='currentUser' ng-click='logout()'>Logout</button>
         <button class='button-lg' ng-show='currentUser' ng-click='changePassword()'>Change Password</button>
-        <input type='password' placeholder='Old password' ng-show='showInputField' ng-model='oldPassField'>
-        <input type='password' placeholder='New password' ng-show='showInputField' ng-model='passChangeField'>
-        <input type='password' placeholder='Repeat new password' ng-show='showInputField' ng-model='passChangeFieldRepeat'>
+        <input type='password' placeholder='old password' ng-show='showInputField' ng-model='oldPassField'>
+        <input type='password' placeholder='new password' ng-show='showInputField' ng-model='passChangeField'>
+        <input type='password' placeholder='repeat new password' ng-show='showInputField' ng-model='passChangeFieldRepeat'>
         <button ng-show='showInputField' ng-click='submitNewPassword({oldPass: oldPassField, newPass: passChangeField, newPassVerify: passChangeFieldRepeat})'>Submit</button>
         <button ng-show='showInputField' ng-click='cancel()'>Cancel</button>
         <h3>{{passChangedSuccess}}</h3>
         <div ng-hide='currentUser' class="register-form">
           <h3>Create User</h3>
-          <input ng-model="createName" type='text' placeholder="Firstname">
+          <input ng-model="createName" type='text' placeholder="firstname">
           <input ng-model="email" type="text" placeholder="email">
           <input ng-model="password" type='password' placeholder="password">
-          <input ng-model="passwordVerify" type='password' placeholder="Verify password">
+          <input ng-model="passwordVerify" type='password' placeholder="verify password">
           <button ng-click="newUser({createName: createName, email: email, password: password, passwordVerify: passwordVerify})">Create</button>
         </div>
       </div>
