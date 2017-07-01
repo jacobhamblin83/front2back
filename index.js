@@ -79,6 +79,8 @@ app.post('/api/check_user', function(req, res) {
   })
 })
 
+//change password checks if the password is correct for the user on req.session and then if that is correct then it updates the password on the database to the new password provided
+
 app.post('/api/change_password', function(req, res) {
   db.check_password([req.body.oldPass, req.session.user], function(err,response) {
     if (!err) {

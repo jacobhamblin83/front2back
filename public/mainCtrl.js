@@ -97,9 +97,12 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
     })
   }
 
+  //changePassword is a the input fields for changing password that when showInputField is not false then it will show the input fields
   $scope.changePassword = function() {
     $scope.showInputField = 5;
   }
+
+  //submitNewPassword is a function that checks if the new password and repeat new password are identical. If so it sends the service the object
   $scope.submitNewPassword = function(obj) {
     if (obj.newPass === obj.newPassVerify) {
       mainSvc.changePassword(obj);
