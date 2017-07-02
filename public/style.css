@@ -93,3 +93,13 @@ ul {
 .button-danger {
   background-color:salmon
 }
+.whatever {
+  width: 100%
+}
+tr {
+  max-width: 20%
+}
+.mrflex {
+  display: flex;
+  flex-direction: row,
+}
