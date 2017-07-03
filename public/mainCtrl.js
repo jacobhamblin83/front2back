@@ -216,6 +216,7 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
     }
 
     $scope.addFriend = function(obj) {
+        obj.friend = obj.friend.toLowerCase();
         mainSvc.addFriend(obj).then(function(response) {
             if (response.data !== 'error') {
                 $scope.seeItems()
