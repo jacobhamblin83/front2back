@@ -1,13 +1,12 @@
 angular.module('app').controller('mainCtrl',function($scope, mainSvc){
 
-    $scope.editButtonName = 'Edit'
     $scope.currentUser = $scope.currentUser || ''
     $scope.changePasswordmessageInfo = ''
-    $scope.passChangedSuccess = ''
     $scope.userFirstname = $scope.userFirstname || ''
     $scope.selected = -1
     $scope.showInputField = 0
     $scope.myFriends = ''
+    $scope.hideDelete = 0
 
     const clearform = function() {
         $scope.userInput = ''
@@ -22,9 +21,17 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
         $scope.passwordVerify = ''
         $scope.showInputField = 0
     }
+    const clearFirstName = function() {
+        $scope.createName = ''
+    }
 
-    $scope.submit = function(userInput){
-        mainSvc.submit(userInput).then(function(){
+    $scope.getNewDateTime = function() {
+        var d = new Date;
+        return d.toDateString();
+    }
+
+    $scope.submit = function(obj){
+        mainSvc.submit(obj).then(function(){
             $scope.seeItems()
             clearform()
         })
@@ -33,13 +40,11 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
     $scope.seeItems = function(){
         mainSvc.seeItems().then(function(response){
             $scope.items = response.data
-            // setTimeout($scope.seeItems(), 5000)
         })  
         setTimeout(function() {
             $scope.seeItems() 
-            console.log('hello')
         }
-            , 10000)
+            , 30000)
     }
     $scope.seeItems()
     
@@ -55,27 +60,32 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
 
     $scope.edit = function(id){
         ($scope.selected === id ? $scope.selected = -1 : $scope.selected = id)
+        $scope.hideDelete === 1 ? $scope.hideDelete = 0 : $scope.hideDelete = 1;
     }
 
     $scope.updateItem = function(newObj){
         mainSvc.updateItem(newObj).then(function(){
             $scope.seeItems()
             $scope.selected = -1
+            $scope.hideDelete = 0
         })
     }
 
     $scope.newUser = function(userObj) {
+        if (userObj.createName.length > 10) {
+            alert('Your firstname must be less than 10 characters')
+            return clearFirstName()
+        }
         if (userObj.password !== userObj.passwordVerify){
-            alert('Your password did not match');
+            alert('Your password did not match')
             clearform()
         }
         else {
             mainSvc.checkUser(userObj).then(function(response){
-                console.log(response.data)
                 if (!response.data[0] || response.data[0].email != userObj.email) {
                     mainSvc.newUser(userObj)
                     clearform()
-                    $scope.messageInfo = 'Your account has been created!'
+                    alert(userObj.createName + '. Your account has been created! You can now login')
                 }
                 else {
                     alert("Sorry but that email is already being used")
@@ -90,7 +100,6 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
             $scope.currentUser = response.data
             $scope.currentUser ? $scope.messageInfo = "Logged in." : $scope.messageInfo = ""
             getName()
-            // seeMyFriends()
         })
     }
 
@@ -160,6 +169,8 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
         })
     }
 
+    $scope.notYours = "item.user_email != " + $scope.currentUser
+
     $scope.removeFriend = function(obj) {
         var g = confirm("Are you sure you want remove " + obj.firstname + ' as a friend?');
         if (g == true) {
@@ -170,18 +181,26 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
         } 
     }
 
+    //this function removes ones self as a "friend". You dont want to accidentally remove yourslef from your friends or you wont see what you add to the items
+    var removeMyselfAsFriend = function(data) {
+        var friendsArray = []
+        data.map(function(i) {
+            if (i.email !== $scope.currentUser) {
+                friendsArray.push(i)
+            }
+        })
+        return friendsArray
+    }
+
     var seeMyFriends = function() {
         mainSvc.seeMyFriends().then(function(response) {
-            $scope.myFriends = response.data
+            var friendsList = removeMyselfAsFriend(response.data) 
+            $scope.myFriends = friendsList
         })
     }
     seeMyFriends()
     $scope.cancel = function() {
         $scope.showInputField = 0
-    }
-
-    var clearPassChangedSuccess = function() {
-        $scope.passChangedSuccess = ''
     }
 
     $scope.logout = function(){

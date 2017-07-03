@@ -3,17 +3,20 @@
     <head>
         <title>front2back</title>
         <link href="style.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
     </head>
     
     <body ng-controller='mainCtrl'>
+
         <div class='page'>
 
             <div class='border' ng-show='currentUser'>
 
                 <h3>New Item</h3>
-                <form>
-                    <input type="text" ng-model='userInput' ng-keyup="enter($event)">
-                    <button ng-show='userInput' ng-click='submit({userInput: userInput})'>Submit</button>
+                <form class='form-group'>
+                    <input type="text" class='form-control' ng-model='userInput' ng-keyup="enter($event)">
+                    <button class='btn btn-primary' ng-show='userInput' ng-click='submit({userInput: userInput, date: getNewDateTime()})'>Submit</button>
                 </form>
 
                 <div>
@@ -22,13 +25,21 @@
                     <div class='left' ng-repeat="item in items">
                         <ul>
                             <div class='each'>
-                                <h3 class='item-name'><span style='color:red'>{{item.firstname}}</span>:{{item.name}}</h3>
-                                <div class='buttons'>
-                                    <button class='button-danger' ng-click='removeItem(item.id)'>Delete</button>
-                                    <button ng-click='edit(item.id)'>{{editButtonName}}</button>
-                                    <input ng-show="selected === item.id" type="text" ng-model='info'>
-                                    <button ng-show="selected === item.id" ng-click='updateItem({id: item.id, item: info})'>Update</button>
+                                <div class='table-info' ng-if='item.user_email === currentUser'>
+                                    <h4 class='im-me'>Me:</h4>
+                                    <h4 class='item-info'>{{item.name}}</h4>
                                 </div>
+                                <div class='table-info' ng-if='item.user_email !== currentUser'>
+                                    <h4 class='im-not-me'>{{item.firstname}}:</h4>
+                                    <h4 class='item-info'>{{item.name}}</h4>
+                                </div>
+                                
+                                <form ng-if='item.user_email == currentUser' class='form-group buttons-right'>
+                                    <input class='form-control' ng-show="selected === item.id" type="text" ng-model='inputInfo'>
+                                    <button class='btn btn-danger' ng-click='removeItem(item.id)' ng-hide='hideDelete'>Delete</button>
+                                    <button class='btn btn-warning' ng-click='edit(item.id)'>Edit</button>
+                                    <button class='btn btn-primary'ng-show="inputInfo" ng-click='updateItem({id: item.id, item: inputInfo})'>Update</button>
+                                </form>
                             </div>
                         </ul>
                     </div>
@@ -41,42 +52,45 @@
                 </div>
                 <div ng-hide='currentUser'class="login-form">
                     <h3>Login</h3>
-                    <form>
-                        <input name='login-email' ng-model="login_email" type="email" placeholder="email">
-                        <input name='login-password' ng-model="login_password" type='password' placeholder="password">
-                        <button ng-click="checkUser({email: login_email, password: login_password})">Login</button>
+                    <form class='form-group'>
+                        <input class='form-control' name='login-email' ng-model="login_email" type="email" placeholder="email">
+                        <input class='form-control' name='login-password' ng-model="login_password" type='password' placeholder="password">
+                        <button class='btn btn-primary' ng-click="checkUser({email: login_email, password: login_password})">Login</button>
                     </form>
                 </div>
-                <button class='button-danger' ng-show='currentUser' ng-click='logout()'>Logout</button>
-                <button class='button-lg' ng-show='currentUser' ng-click='changePassword()'>Change Password</button>
-                <form>
-                    <input type='password' placeholder='old password' ng-show='showInputField' ng-model='oldPassField'>
-                    <input type='password' placeholder='new password' ng-show='showInputField' ng-model='passChangeField'>
-                    <input type='password' placeholder='repeat new password' ng-show='showInputField' ng-model='passChangeFieldRepeat'>
-                    <button ng-show='showInputField' ng-click='submitNewPassword({oldPass: oldPassField, newPass: passChangeField, newPassVerify: passChangeFieldRepeat})'>Submit</button>
+                <div class='flex-row'>
+                    <button class='btn-warning btn btn-primary' ng-show='currentUser' ng-click='logout()'>Logout</button>
+                    <button class='btn btn-primary' ng-show='currentUser' ng-click='changePassword()'>Change Password</button>
+                </div>
+                <form class='form-group margin-adder'>
+                    <input class='form-control' type='password' placeholder='old password' ng-show='showInputField' ng-model='oldPassField'>
+                    <input class='form-control' type='password' placeholder='new password' ng-show='showInputField' ng-model='passChangeField'>
+                    <input class='form-control' type='password' placeholder='repeat new password' ng-show='showInputField' ng-model='passChangeFieldRepeat'>
+                    <button class='btn btn-primary' ng-show='passChangeFieldRepeat' ng-click='submitNewPassword({oldPass: oldPassField, newPass: passChangeField, newPassVerify: passChangeFieldRepeat})'>Submit</button>
+                    <button class='btn btn-warning' ng-show='showInputField' ng-click='cancel()'>Cancel</button>
                 </form>
-                <button class='button-danger' ng-show='showInputField' ng-click='cancel()'>Cancel</button>
-                <h3>{{passChangedSuccess}}</h3>
+                
                 <div ng-hide='currentUser' class="register-form">
                     <h3>Create User</h3>
-                    <form>
-                        <input ng-model="createName" type='text' placeholder="firstname">
-                        <input ng-model="email" type="text" placeholder="email">
-                        <input ng-model="password" type='password' placeholder="password">
-                        <input ng-model="passwordVerify" type='password' placeholder="verify password">
-                        <button ng-click="newUser({createName: createName, email: email, password: password, passwordVerify: passwordVerify})">Create</button>
+                    <form class='form-group'>
+                        <input class='form-control' ng-model="createName" type='text' placeholder="firstname">
+                        <input class='form-control' ng-model="email" type="text" placeholder="email">
+                        <input class='form-control' ng-model="password" type='password' placeholder="password">
+                        <input class='form-control' ng-model="passwordVerify" type='password' placeholder="verify password">
+                        <button class='btn btn-primary' ng-click="newUser({createName: createName, email: email, password: password, passwordVerify: passwordVerify})">Create</button>
                     </form>
                 </div>
                 <div ng-show='currentUser'>
                     <h3>Link with friends</h3>
-                    <input ng-model='friend' type='text' placeholder='add friends email'>
-                    <button ng-show='friend' ng-click='addFriend({friend: friend})' class='button-lg'>Add friend</button>    
+                    <form class='form-group flex-row'>
+                        <input class='form-control' ng-model='friend' type='text' placeholder='add friends email'>
+                        <button ng-show='friend' ng-click='addFriend({friend: friend})' class='btn btn-primary'>Add friend</button> 
+                    </form>   
                 </div>
                 <h3>My Friends</h3>
-                <div ng-repeat='friendy in myFriends'>
+                <div class='flex-row' ng-repeat='friendy in myFriends'>
                     <h5>{{friendy.firstname}}</h5>
-                    <h5>{{friendy.email}}</h5>
-                    <button ng-click='removeFriend({id: friendy.id, firstname: friendy.firstname})'>Remove</button>
+                    <button class='btn btn-primary'ng-click='removeFriend({id: friendy.id, firstname: friendy.firstname})'>Remove</button>
                 </div> 
             </div>
         </div>

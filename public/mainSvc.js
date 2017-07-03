@@ -1,7 +1,7 @@
 angular.module('app').service('mainSvc', function ($http) {
 
-    this.submit = (userInput) => {
-        return $http.post('/api/list', userInput);
+    this.submit = (obj) => {
+        return $http.post('/api/list', obj);
     }
     this.seeItems = () => {
         return $http.get('/api/list');

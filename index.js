@@ -35,32 +35,23 @@ app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'))
 
 //create an item in the database which takes user input from the web page and their user email from the session
-app.post('/api/list', function (req, res) {
-    db.create_item([req.body.userInput, req.session.user], function (err, success) {
+app.post('/api/list', function(req, res) {
+    console.log(req.body.userInput, req.body.date, req.session.user)
+    db.create_item([req.body.userInput, req.body.date, req.session.user], function(err, success) {
         (err) ? res.status(500).json(err) : res.status(200).json('success')
     })
 })
 
 //see all the items in the users list based off session user email
-app.get('/api/list', function (req, res) {
+//this will include any friends that the user has in the friends table
+app.get('/api/list', function(req, res) {
     db.see_items([req.session.user], function (err, item) {
         (err) ? res.status(500).json(err) : res.status(200).json(item)
     })
 })
 
-//need to make an endpoint for add friend
-//post into a new table that has friends
-//then i can change db.see_items to incorporate 
-//a select from friends of req.session.user and then
-//use friends to select from items where email = req.session.user 
-// and ALSO any of the friends' emails
-
-
-
-//need to make an endpoint for remove friend
-
 //remove item based on the ID of database entry
-app.delete('/api/list/:id', function (req, res) {
+app.delete('/api/list/:id', function(req, res) {
     db.remove_item([req.params.id], function(err, id) {
         (err) ? res.status(500).json(err) : res.status(200).json(id)
     })

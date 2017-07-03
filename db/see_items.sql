@@ -1,4 +1,4 @@
-SELECT users.firstname, items.id, name, items.user_email
+SELECT items.date_string, users.firstname, items.id, name, items.user_email
 FROM items
 JOIN users 
 ON users.email = items.user_email
