@@ -7,7 +7,7 @@ input {
 button {
   background-color: lightblue;
   margin: 5px;
-  font-size: 13px;
+  font-size: 20px;
   text-align: center
 
 }
@@ -70,7 +70,8 @@ ul {
 .page {
   display: flex;
   flex-direction: column;
-  justify-content: space-around
+  justify-content: space-around;
+  margin: 0 auto
 }
 @media(max-width: 900px) {
   .page {

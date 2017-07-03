@@ -4,6 +4,8 @@
         <title>front2back</title>
         <link href="style.css" rel="stylesheet">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <meta id="meta" name="viewport"
+        content="width=device-width; initial-scale=1.0" />
 
     </head>
     
@@ -87,7 +89,7 @@
                         <button ng-show='friend' ng-click='addFriend({friend: friend})' class='btn btn-primary'>Add friend</button> 
                     </form>   
                 </div>
-                <h3>My Friends</h3>
+                <h3 ng-show='currentUser'>My Friends</h3>
                 <div class='flex-row' ng-repeat='friendy in myFriends'>
                     <h5>{{friendy.firstname}}</h5>
                     <button class='btn btn-primary'ng-click='removeFriend({id: friendy.id, firstname: friendy.firstname})'>Remove</button>
