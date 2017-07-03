@@ -34,10 +34,13 @@ app.use(bodyParser.json());
 
 app.use(express.static(__dirname + '/public'))
 
-//create an item in the database which takes user input from the web page and their user email from the session
+//create an item in the database which takes user input from the web page and their
+//user email from the session
 app.post('/api/list', function(req, res) {
-    console.log(req.body.userInput, req.body.date, req.session.user)
-    db.create_item([req.body.userInput, req.body.date, req.session.user], function(err, success) {
+    let input = req.body.userInput
+    let date = req.body.date
+    let user = req.session.user
+    db.create_item([input, date, user], function(err, success) {
         (err) ? res.status(500).json(err) : res.status(200).json('success')
     })
 })
@@ -59,27 +62,36 @@ app.delete('/api/list/:id', function(req, res) {
 
 //change an item based off its ID and the user input
 app.put('/api/listupdate', function(req, res) {
-    db.change_item([req.body.id, req.body.item], function(err, response){
+    let id = req.body.id
+    let item = req.body.item
+    db.change_item([id, item], function(err, response){
         (err) ? res.status(500).json(err) : res.status(200).json(response)
     })
 })
 
-//create a new user based on user input from web page. First the web app checks the database to make sure the email is not already used and then creates the user
+//create a new user based on user input from web page. First the web app checks the
+//database to make sure the email is not already used and then creates the user
 app.post('/api/create_user', function(req, res) {
-    db.create_user([req.body.createName, req.body.email, req.body.password], function(err, response) {
+    let name = req.body.createName
+    let email = req.body.email
+    let pass = req.body.password
+    db.create_user([name, email, pass], function(err, response) {
         if (!err) {
-            req.session.user = req.body.email;
-            req.session.firstname = req.body.createName;
+            req.session.user = email;
+            req.session.firstname = name;
             res.status(200).json(response);
         }
         else res.status(500).json(err); 
     })
-    db.add_friend([req.body.email, req.body.email], function(err, response) {
+    //adding yourself as a friend since what you see is based on your friends
+    db.add_friend([email, email], function(err, response) {
     })
 })
 
 app.post('/api/add_friend', function(req, res) {
-    db.add_friend([req.session.user, req.body.friend], function(err, response) {
+    let user = req.session.user
+    let friend = req.body.friend
+    db.add_friend([user, friend], function(err, response) {
         res.status(200).json(response)
     })
 })
@@ -96,9 +108,12 @@ app.post('/api/see_friends', function(req, res) {
     })
 })
 
-//this is for logging in to an already created user. The email and password from the web app are sent to the database and return a response if there is a match
+//this is for logging in to an already created user. The email and password from
+//the web app are sent to the database and return a response if there is a match
 app.post('/api/check_user', function(req, res) {
-    db.check_user([req.body.email, req.body.password], function(err, response) {
+    let email = req.body.email
+    let pass = req.body.password
+    db.check_user([email, pass], function(err, response) {
         if (!err) {
             req.session.user = req.body.email
             res.status(200).json(response)
@@ -109,21 +124,24 @@ app.post('/api/check_user', function(req, res) {
     })
 })
 
-//change password checks if the password is correct for the user on req.session and then if that is correct then it updates the password on the database to the new password provided
+//change password checks if the password is correct for the user on req.session and
+//then if that is correct then it updates the password on the database to the new 
+//password provided
 
 app.post('/api/change_password', function(req, res) {
-    db.check_password([req.body.oldPass, req.session.user], function(err, response) {
+    let user = req.session.user
+    let pass = req.body.oldPass
+    let newPass = req.body.newPass
+    db.check_password([pass, user], function(err, response) {
         if (response[0]) {
-            if (response[0].email === req.session.user) {
-                db.set_new_pass([req.body.newPass, req.session.user], function(err, response) {
-                console.log('password has been changed to ' + req.body.newPass)
-                res.status(200).json('success')
-            })
-        }
+            if (response[0].email === user) {
+                db.set_new_pass([newPass, user], function(err, response) {
+                    res.status(200).json('success')
+                })
+            }
         }
         else {
             res.status(200).json('error')
-            console.log('error man')
         }
     })
 })

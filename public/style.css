@@ -1,3 +1,6 @@
+body {
+  padding: 20px
+}
 input {
   height: 20px;
   width: 200px;
@@ -23,7 +26,7 @@ p {
 }
 .left {
   display: flex;
-  flex-direction: column
+  flex-direction: column;
 }
 .each {
   display: flex;
@@ -88,6 +91,11 @@ ul {
     min-width: 400px;
   }
 }
+@media(max-width: 450px) {
+  body {
+    padding: 0
+  }
+}
 .button-lg {
   width: 160px
 }
@@ -113,17 +121,21 @@ ul {
 .table-info {
   display: flex;
   flex-direction: row;
-  width: 70%;
   min-width: 300px;
+  width: 95%
 }
 .im-me {
   color:green;
-  width: 30%;
+  width: 20%;
 }
 .im-not-me {
   color: red;
-  width: 30%;
+  width: 20%;
 }
 .item-info {
   width: 70%;
+}
+.scroll-page {
+  height: 600px;
+  overflow-y: scroll
 }

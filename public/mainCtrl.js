@@ -3,10 +3,11 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
     $scope.currentUser = $scope.currentUser || ''
     $scope.changePasswordmessageInfo = ''
     $scope.userFirstname = $scope.userFirstname || ''
-    $scope.selected = -1
-    $scope.showInputField = 0
     $scope.myFriends = ''
     $scope.hideDelete = 0
+    $scope.showInputField = 0
+    $scope.selected = -1
+    $scope.items;
 
     const clearform = function() {
         $scope.userInput = ''
@@ -26,10 +27,22 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
     }
 
     $scope.getNewDateTime = function() {
-        var d = new Date;
-        return d.toDateString();
+        let d = new Date;
+        let min = d.getMinutes()
+        let hr = function(){
+           if (d.getHours()>12) {
+               return d.getHours() -12
+           }
+           else if (d.getHours() === 0) {
+               return 12
+           }
+           else return d.getHours()
+        }
+        let day = d.getDate()
+        let month = d.getMonth()
+        return `${hr()}:${min} ${month}/${day}`
     }
-
+ 
     $scope.submit = function(obj){
         mainSvc.submit(obj).then(function(){
             $scope.seeItems()
@@ -39,12 +52,49 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
 
     $scope.seeItems = function(){
         mainSvc.seeItems().then(function(response){
-            $scope.items = response.data
+            response.data.map(function(i) {
+                let f = new Date
+                let g = f.getDate()
+                let e = i.date_string.split('/')
+                let h = i.date_string.split(' ')
+                //if the date the item was created is today then only the 
+                //time shows
+                if (e[1] == g) {
+                    i.date_string = h[0]
+                }
+                //otherwise only the date shows
+                else if (e[1] != g) {
+                    i.date_string = h[1]
+                }
+            })
+
+
+            //this gets tricky... so if the length of the array of items 
+            //rendered on the screen is the same as the array returned by 
+            //the promise then nothing is updated
+            if ($scope.items && $scope.items.length === response.data.length) {
+                // im going to have to fix this cause it only allows to update
+                // the dom if the first item in the array is changed
+                if ($scope.items[0].name !== response.data[0].name) {
+                    $scope.items = response.data
+                    console.log('item updated')
+                }
+                console.log('staying the same')
+            }
+            else {
+                $scope.items = response.data
+                console.log('new info came in')
+            }
+            setTimeout(function() {
+                $scope.seeItems() 
+            }
+                , 30000)
         })  
-        setTimeout(function() {
-            $scope.seeItems() 
-        }
-            , 30000)
+        //the setTimeout function continually checks for new items add
+        //by friends
+        //not really the way i would like to do it but it works...kind of
+        //there is a problem when trying to edit your item when seeItems
+        //runs again and you are in the middle of typing
     }
     $scope.seeItems()
     
@@ -72,16 +122,24 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
     }
 
     $scope.newUser = function(userObj) {
+        //set email to all lowercase just in case they mess up
+        userObj.email = userObj.email.toLowerCase()
+        //keep length less than 10 characters
         if (userObj.createName.length > 10) {
             alert('Your firstname must be less than 10 characters')
+            //clear the firstname field and exit the function
             return clearFirstName()
         }
+        //check if password and retype password match 
         if (userObj.password !== userObj.passwordVerify){
             alert('Your password did not match')
-            clearform()
+            //clear the form and exit the function
+            return clearform()
         }
+        //if all is ok continue
         else {
             mainSvc.checkUser(userObj).then(function(response){
+                //check if the email is already in the database
                 if (!response.data[0] || response.data[0].email != userObj.email) {
                     mainSvc.newUser(userObj)
                     clearform()
@@ -136,7 +194,7 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
         $scope.showInputField = 5
     }
 
-    //submitNewPassword is a function that checks if the new password and repeat new password are identical. If so it sends the service the object
+    //submitNewPassword is a function that checks if the new password and repeat //new password are identical. If so it sends the service the object
     $scope.submitNewPassword = function(obj) {
         if (obj.newPass === obj.newPassVerify) {
             mainSvc.changePassword(obj).then(function(response) {
