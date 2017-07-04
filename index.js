@@ -75,7 +75,7 @@ app.post('/api/create_user', function(req, res) {
     let name = req.body.createName
     let email = req.body.email
     let pass = req.body.password
-    db.create_user([name, email, pass], function(err, response) {
+    db.create_user([name, email, pass], function(e, response) {
         if (!err) {
             req.session.user = email;
             req.session.firstname = name;
@@ -151,6 +151,7 @@ app.get('/api/see_user', function(req, res) {
     res.status(200).json(req.session.user)
 })
 
+//find out what the users first name is 
 app.get('/api/get_name', function(req, res) {
     db.get_name([req.session.user], function(err, response) {
         res.status(200).json(response)

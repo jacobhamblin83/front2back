@@ -1,29 +1,29 @@
 body {
   padding: 20px
 }
-input {
+/*input {
   height: 20px;
   width: 200px;
   margin: 5px 5px 5px 5px;
   font-size: 15px;
-}
-button {
+}*/
+/*button {
   background-color: lightblue;
   margin: 5px;
   font-size: 20px;
   text-align: center
 
-}
-.indent {
+}*/
+/*.indent {
   margin-left: 50px;
   margin-bottom: 5px;
-}
-p {
+}*/
+/*p {
   font-size: 15px;
-}
-.split {
+}*/
+/*.split {
   display: flex;
-}
+}*/
 .left {
   display: flex;
   flex-direction: column;
@@ -32,13 +32,13 @@ p {
   display: flex;
   flex-direction: row
 }
-.spread {
+/*.spread {
   display: flex;
   justify-content: space-between
-}
-h3 {
+}*/
+/*h3 {
   margin: 0;
-}
+}*/
 .item-name {
   margin: auto 0;
 }
@@ -63,9 +63,6 @@ ul {
   padding: 10px;
 }
 .login-register-form {
-  /*border-width: 1px;
-  border-style: solid;
-  border-color: black;*/
   width: 20vw;
   min-width: 210px;
   padding: 10px;
@@ -79,7 +76,6 @@ ul {
 @media(max-width: 900px) {
   .page {
     flex-direction: column-reverse;
-
   }
 }
 @media(max-width: 600px) {
@@ -95,15 +91,6 @@ ul {
   body {
     padding: 0
   }
-}
-.button-lg {
-  width: 160px
-}
-.button-danger {
-  background-color:salmon
-}
-.whatever {
-  width: 100%
 }
 .flex-row {
   display: flex;

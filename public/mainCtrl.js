@@ -1,15 +1,9 @@
 angular.module('app').controller('mainCtrl',function($scope, mainSvc){
 
-    $scope.currentUser = $scope.currentUser || ''
-    $scope.changePasswordmessageInfo = ''
-    $scope.userFirstname = $scope.userFirstname || ''
-    $scope.myFriends = ''
-    $scope.hideDelete = 0
-    $scope.showInputField = 0
-    $scope.selected = -1
-    $scope.items;
+    var pause;
 
     const clearform = function() {
+        $scope.items;
         $scope.userInput = ''
         $scope.login_email = ''
         $scope.login_password = ''
@@ -20,8 +14,17 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
         $scope.passChangeFieldRepeat = ''
         $scope.createName = ''
         $scope.passwordVerify = ''
-        $scope.showInputField = 0
+        $scope.currentUser = $scope.currentUser || ''
+        $scope.changePasswordmessageInfo = ''
+        $scope.userFirstname = $scope.userFirstname || ''
+        $scope.myFriends = ''
+        $scope.selected = -1
+        $scope.hideDelete = false
+        $scope.showInputField = false
+        pause = false
     }
+    clearform()
+
     const clearFirstName = function() {
         $scope.createName = ''
     }
@@ -67,28 +70,17 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
                     i.date_string = h[1]
                 }
             })
-
-
-            //this gets tricky... so if the length of the array of items 
-            //rendered on the screen is the same as the array returned by 
-            //the promise then nothing is updated
-            if ($scope.items && $scope.items.length === response.data.length) {
-                // im going to have to fix this cause it only allows to update
-                // the dom if the first item in the array is changed
-                if ($scope.items[0].name !== response.data[0].name) {
-                    $scope.items = response.data
-                    console.log('item updated')
-                }
-                console.log('staying the same')
-            }
-            else {
+            //pause is set to 0 unless you are in the middle of editing
+            //one of the items in which case pause is 1
+            //once you submit the item and are done editing it, pause is 
+            //set back to 0
+            if (!pause) {
                 $scope.items = response.data
-                console.log('new info came in')
+                setTimeout(function() {
+                    $scope.seeItems() 
+                }
+                    , 30000)
             }
-            setTimeout(function() {
-                $scope.seeItems() 
-            }
-                , 30000)
         })  
         //the setTimeout function continually checks for new items add
         //by friends
@@ -97,7 +89,6 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
         //runs again and you are in the middle of typing
     }
     $scope.seeItems()
-    
 
     $scope.removeItem = function(id){
         var r = confirm("Are you sure you want to delete this item?");
@@ -110,14 +101,17 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
 
     $scope.edit = function(id){
         ($scope.selected === id ? $scope.selected = -1 : $scope.selected = id)
-        $scope.hideDelete === 1 ? $scope.hideDelete = 0 : $scope.hideDelete = 1;
+        $scope.hideDelete ? $scope.hideDelete = false : $scope.hideDelete = true;
+        pause = true
     }
 
     $scope.updateItem = function(newObj){
         mainSvc.updateItem(newObj).then(function(){
+            pause = false
             $scope.seeItems()
             $scope.selected = -1
-            $scope.hideDelete = 0
+            $scope.hideDelete = false
+            clearform()
         })
     }
 
@@ -191,7 +185,7 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
 
     //changePassword is a the input fields for changing password that when showInputField is not false then it will show the input fields
     $scope.changePassword = function() {
-        $scope.showInputField = 5
+        $scope.showInputField = true
     }
 
     //submitNewPassword is a function that checks if the new password and repeat //new password are identical. If so it sends the service the object
@@ -228,8 +222,6 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
         })
     }
 
-    $scope.notYours = "item.user_email != " + $scope.currentUser
-
     $scope.removeFriend = function(obj) {
         var g = confirm("Are you sure you want remove " + obj.firstname + ' as a friend?');
         if (g == true) {
@@ -259,7 +251,7 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
     }
     seeMyFriends()
     $scope.cancel = function() {
-        $scope.showInputField = 0
+        $scope.showInputField = false
     }
 
     $scope.logout = function(){
