@@ -1,6 +1,6 @@
 # front2back
 
-This is a simple register and login app that allows the user to add items to a list
+This is a simple register and login app that allows the user to add, delete, and edit items in their list. You can also add friends and see what is on their 'list'.
 
 ## Getting Started
 
