@@ -14,10 +14,10 @@ const config = require('./config.js')
 // const connectionString = 'postgres://postgres:Testies1-1@localhost/jacobhamblin';
 
 //changed to a hosted database
-const connectionString = 'postgres://suuauihq:12cpEgmVX8tOVFGi_ENf31uCErYecQxQ@pellefant.db.elephantsql.com:5432/suuauihq';
+const connectionString = config.connectionString;
 
 const db = massive.connectSync({
-    connectionString: connectionString
+    connectionString,
 })
 
 //create session
@@ -36,46 +36,54 @@ app.use(express.static(__dirname + '/public'))
 
 //create an item in the database which takes user input from the web page and their
 //user email from the session
-app.post('/api/list', function(req, res) {
+app.post('/api/list', (req, res) => {
     let input = req.body.userInput
     let date = req.body.date
     let user = req.session.user
-    db.create_item([input, date, user], function(err, success) {
-        (err) ? res.status(500).json(err) : res.status(200).json('success')
+    db.create_item([input, date, user], (err, success) => {
+        err ? 
+        res.status(500).json(err) : 
+        res.status(200).json('success')
     })
 })
 
 //see all the items in the users list based off session user email
 //this will include any friends that the user has in the friends table
-app.get('/api/list', function(req, res) {
-    db.see_items([req.session.user], function (err, item) {
-        (err) ? res.status(500).json(err) : res.status(200).json(item)
+app.get('/api/list', (req, res) => {
+    db.see_items(req.session.user, (err, item) => {
+        err ? 
+        res.status(500).json(err) : 
+        res.status(200).json(item)
     })
 })
 
 //remove item based on the ID of database entry
-app.delete('/api/list/:id', function(req, res) {
-    db.remove_item([req.params.id], function(err, id) {
-        (err) ? res.status(500).json(err) : res.status(200).json(id)
+app.delete('/api/list/:id', (req, res) => {
+    db.remove_item(req.params.id, (err, id) => {
+        err ? 
+        res.status(500).json(err) : 
+        res.status(200).json(id)
     })
 })
 
 //change an item based off its ID and the user input
-app.put('/api/listupdate', function(req, res) {
+app.put('/api/listupdate', (req, res) => {
     let id = req.body.id
     let item = req.body.item
-    db.change_item([id, item], function(err, response){
-        (err) ? res.status(500).json(err) : res.status(200).json(response)
+    db.change_item([id, item], (err, response) => {
+        err ? 
+        res.status(500).json(err) : 
+        res.status(200).json(response)
     })
 })
 
 //create a new user based on user input from web page. First the web app checks the
 //database to make sure the email is not already used and then creates the user
-app.post('/api/create_user', function(req, res) {
+app.post('/api/create_user', (req, res) => {
     let name = req.body.createName
     let email = req.body.email
     let pass = req.body.password
-    db.create_user([name, email, pass], function(e, response) {
+    db.create_user([name, email, pass], (err, response) => {
         if (!err) {
             req.session.user = email;
             req.session.firstname = name;
@@ -84,36 +92,45 @@ app.post('/api/create_user', function(req, res) {
         else res.status(500).json(err); 
     })
     //adding yourself as a friend since what you see is based on your friends
-    db.add_friend([email, email], function(err, response) {
-    })
-})
-
-app.post('/api/add_friend', function(req, res) {
-    let user = req.session.user
-    let friend = req.body.friend
-    db.add_friend([user, friend], function(err, response) {
+    db.add_friend([email, email], (err, response) => {
+        err ?
+        res.status(500).json(err) :
         res.status(200).json(response)
     })
 })
 
-app.delete('/api/friends/:id', function (req, res) {
-    db.remove_friend([req.params.id], function(err, id) {
-        (err) ? res.status(500).json(err) : res.status(200).json(id)
+app.post('/api/add_friend', (req, res) => {
+    let user = req.session.user
+    let friend = req.body.friend
+    db.add_friend([user, friend], (err, response) => {
+        err ?
+        res.status(500).json(err) :
+        res.status(200).json(response)
     })
 })
 
-app.post('/api/see_friends', function(req, res) {
-    db.see_friends(req.session.user, function(err, response) {
+app.delete('/api/friends/:id', (req, res) => {
+    db.remove_friend(req.params.id, (err, id) => {
+        err ? 
+        res.status(500).json(err) : 
+        res.status(200).json(id)
+    })
+})
+
+app.post('/api/see_friends', (req, res) => {
+    db.see_friends(req.session.user, (err, response) => {
+        err ?
+        res.status(500).json(response) :
         res.status(200).json(response)
     })
 })
 
 //this is for logging in to an already created user. The email and password from
 //the web app are sent to the database and return a response if there is a match
-app.post('/api/check_user', function(req, res) {
+app.post('/api/check_user', (req, res) => {
     let email = req.body.email
     let pass = req.body.password
-    db.check_user([email, pass], function(err, response) {
+    db.check_user([email, pass], (err, response) => {
         if (!err) {
             req.session.user = req.body.email
             res.status(200).json(response)
@@ -128,14 +145,14 @@ app.post('/api/check_user', function(req, res) {
 //then if that is correct then it updates the password on the database to the new 
 //password provided
 
-app.post('/api/change_password', function(req, res) {
+app.post('/api/change_password', (req, res) => {
     let user = req.session.user
     let pass = req.body.oldPass
     let newPass = req.body.newPass
-    db.check_password([pass, user], function(err, response) {
+    db.check_password([pass, user], (err, response) => {
         if (response[0]) {
             if (response[0].email === user) {
-                db.set_new_pass([newPass, user], function(err, response) {
+                db.set_new_pass([newPass, user], (err, response) => {
                     res.status(200).json('success')
                 })
             }
@@ -147,23 +164,21 @@ app.post('/api/change_password', function(req, res) {
 })
 
 //this is made to simply check who the user is in case of page reload, etc.
-app.get('/api/see_user', function(req, res) {
-    res.status(200).json(req.session.user)
-})
+app.get('/api/see_user', (req, res) => res.status(200).json(req.session.user))
 
 //find out what the users first name is 
-app.get('/api/get_name', function(req, res) {
-    db.get_name([req.session.user], function(err, response) {
+app.get('/api/get_name', (req, res) => {
+    db.get_name(req.session.user, (err, response) => {
+        err ?
+        res.status(500).json(err) :
         res.status(200).json(response)
     })
 })
 
 //logout removes the user off of session
-app.post('/api/logout', function(req, res) {
+app.post('/api/logout', (req, res) => {
     req.session.user = null;
     res.status(200).json(req.session.user)
 })
 
-app.listen(port, function () {
-    console.log('Listening on port ' + port)
-})
+app.listen(port, () => console.log('Listening on port ' + port))

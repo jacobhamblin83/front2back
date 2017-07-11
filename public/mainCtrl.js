@@ -1,8 +1,8 @@
 angular.module('app').controller('mainCtrl',function($scope, mainSvc){
 
-    var pause;
+    let pause = false;
 
-    const clearform = function() {
+    const clearform = () => {
         $scope.items;
         $scope.userInput = ''
         $scope.login_email = ''
@@ -25,11 +25,11 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
     }
     clearform()
 
-    const clearFirstName = function() {
+    const clearFirstName = () => {
         $scope.createName = ''
     }
 
-    $scope.getNewDateTime = function() {
+    $scope.getNewDateTime = () => {
         let d = new Date;
         let min = d.getMinutes()
         let hr = function(){
@@ -46,16 +46,16 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
         return `${hr()}:${min} ${month}/${day}`
     }
  
-    $scope.submit = function(obj){
-        mainSvc.submit(obj).then(function(){
+    $scope.submit = obj => {
+        mainSvc.submit(obj).then( () => {
             $scope.seeItems()
             clearform()
         })
     }
 
-    $scope.seeItems = function(){
-        mainSvc.seeItems().then(function(response){
-            response.data.map(function(i) {
+    $scope.seeItems = () => {
+        mainSvc.seeItems().then( response => {
+            response.data.map( i => {
                 let f = new Date
                 let g = f.getDate()
                 let e = i.date_string.split('/')
@@ -76,7 +76,7 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
             //set back to 0
             if (!pause) {
                 $scope.items = response.data
-                setTimeout(function() {
+                setTimeout( () => {
                     $scope.seeItems() 
                 }
                     , 30000)
@@ -90,23 +90,28 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
     }
     $scope.seeItems()
 
-    $scope.removeItem = function(id){
-        var r = confirm("Are you sure you want to delete this item?");
+    $scope.removeItem = id => {
+        let r = confirm("Are you sure you want to delete this item?");
         if (r == true) {
-            mainSvc.removeItem(id).then(function(){
+            mainSvc.removeItem(id).then( () => {
             $scope.seeItems()
             })
         } 
     }
 
-    $scope.edit = function(id){
-        ($scope.selected === id ? $scope.selected = -1 : $scope.selected = id)
-        $scope.hideDelete ? $scope.hideDelete = false : $scope.hideDelete = true;
+    $scope.edit = id => {
+        ($scope.selected === id ? 
+        $scope.selected = -1 : 
+        $scope.selected = id)
+        
+        $scope.hideDelete ? 
+        $scope.hideDelete = false : 
+        $scope.hideDelete = true;
         pause = true
     }
 
-    $scope.updateItem = function(newObj){
-        mainSvc.updateItem(newObj).then(function(){
+    $scope.updateItem = newObj => {
+        mainSvc.updateItem(newObj).then( () => {
             pause = false
             $scope.seeItems()
             $scope.selected = -1
@@ -115,7 +120,7 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
         })
     }
 
-    $scope.newUser = function(userObj) {
+    $scope.newUser = userObj => {
         //set email to all lowercase just in case they mess up
         userObj.email = userObj.email.toLowerCase()
         //keep length less than 10 characters
@@ -132,7 +137,7 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
         }
         //if all is ok continue
         else {
-            mainSvc.checkUser(userObj).then(function(response){
+            mainSvc.checkUser(userObj).then( response => {
                 //check if the email is already in the database
                 if (!response.data[0] || response.data[0].email != userObj.email) {
                     mainSvc.newUser(userObj)
@@ -147,18 +152,20 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
         }
     }
 
-    var seeUser = function() {
-        mainSvc.seeUser().then(function(response) {
+    let seeUser = () => {
+        mainSvc.seeUser().then( response => {
             $scope.currentUser = response.data
-            $scope.currentUser ? $scope.messageInfo = "Logged in." : $scope.messageInfo = ""
+            $scope.currentUser ? 
+            $scope.messageInfo = "Logged in." : 
+            $scope.messageInfo = ""
             getName()
         })
     }
 
     seeUser();
 
-    var getName = function() {
-        mainSvc.getName().then(function(response) {
+    let getName = () => {
+        mainSvc.getName().then( response => {
             if(response.data[0]) {
                 $scope.userFirstname = response.data[0].firstname
             }
@@ -166,8 +173,8 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
     }
   
 
-    $scope.checkUser = function(obj) {
-        mainSvc.checkUser(obj).then(function(response){
+    $scope.checkUser = obj => {
+        mainSvc.checkUser(obj).then( response => {
             if (!response.data[0]) {
                 alert("Sorry, that is all wrong")
                 $scope.currentUser = null
@@ -184,14 +191,14 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
     }
 
     //changePassword is a the input fields for changing password that when showInputField is not false then it will show the input fields
-    $scope.changePassword = function() {
+    $scope.changePassword = () => {
         $scope.showInputField = true
     }
 
     //submitNewPassword is a function that checks if the new password and repeat //new password are identical. If so it sends the service the object
-    $scope.submitNewPassword = function(obj) {
+    $scope.submitNewPassword = obj => {
         if (obj.newPass === obj.newPassVerify) {
-            mainSvc.changePassword(obj).then(function(response) {
+            mainSvc.changePassword(obj).then( response => {
                  if (response.data === 'error') {
                      alert('Your password is incorrect')
                      $scope.oldPassField = ''
@@ -209,9 +216,9 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
         }
     }
 
-    $scope.addFriend = function(obj) {
+    $scope.addFriend = obj => {
         obj.friend = obj.friend.toLowerCase();
-        mainSvc.addFriend(obj).then(function(response) {
+        mainSvc.addFriend(obj).then( response => {
             if (response.data !== 'error') {
                 $scope.seeItems()
                 seeMyFriends()
@@ -222,10 +229,10 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
         })
     }
 
-    $scope.removeFriend = function(obj) {
-        var g = confirm("Are you sure you want remove " + obj.firstname + ' as a friend?');
+    $scope.removeFriend = obj => {
+        let g = confirm("Are you sure you want remove " + obj.firstname + ' as a friend?');
         if (g == true) {
-            mainSvc.removeFriend(obj.id).then(function(response) {
+            mainSvc.removeFriend(obj.id).then( response => {
             seeMyFriends()
             $scope.seeItems();
         })
@@ -233,9 +240,9 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
     }
 
     //this function removes ones self as a "friend". You dont want to accidentally remove yourslef from your friends or you wont see what you add to the items
-    var removeMyselfAsFriend = function(data) {
-        var friendsArray = []
-        data.map(function(i) {
+    let removeMyselfAsFriend = data => {
+        let friendsArray = []
+        data.map(i => {
             if (i.email !== $scope.currentUser) {
                 friendsArray.push(i)
             }
@@ -243,19 +250,19 @@ angular.module('app').controller('mainCtrl',function($scope, mainSvc){
         return friendsArray
     }
 
-    var seeMyFriends = function() {
-        mainSvc.seeMyFriends().then(function(response) {
-            var friendsList = removeMyselfAsFriend(response.data) 
+    let seeMyFriends = () => {
+        mainSvc.seeMyFriends().then( response => {
+            let friendsList = removeMyselfAsFriend(response.data) 
             $scope.myFriends = friendsList
         })
     }
     seeMyFriends()
-    $scope.cancel = function() {
+    $scope.cancel = () => {
         $scope.showInputField = false
     }
 
-    $scope.logout = function(){
-        var a = confirm('Are you sure you want to logout?');
+    $scope.logout = () => {
+        let a = confirm('Are you sure you want to logout?');
         if (a) {
             mainSvc.logout()
             seeUser()
